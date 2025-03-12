@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form & Riwayat Transaksi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: url('blue.jfif');
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgba(173, 216, 230, 0.9);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label, input, select, textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #87CEFA;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="formContainer">
+        <h2>Form Pembelian Barang</h2>
+        <form id="orderForm">
+            <label for="tanggal">Tanggal Transaksi:</label>
+            <input type="date" id="tanggal" name="tanggal" required>
+
+            <label for="barang">Nama Barang:</label>
+            <select id="barang" name="barang">
+                <option value="Sandal Velora - Rp 44.000">Sandal Velora - Rp 44.000</option>
+                <option value="Sandal Kasual - Rp 37.200">Sandal Kasual - Rp 37.200</option>
+                <option value="Sandal Syaila - Rp 48.000">Sandal Syaila - Rp 48.000</option>
+                <option value="Sandal Wedges - Rp 48.000">Sandal Wedges - Rp 48.000</option>
+            </select>
+
+            <label for="ukuran">Ukuran:</label>
+            <select id="ukuran" name="ukuran">
+                <option value="36">36</option>
+                <option value="37">37</option>
+                <option value="38">38</option>
+                <option value="39">39</option>
+                <option value="40">40</option>
+            </select>
+
+            <label for="jumlah">Jumlah:</label>
+            <input type="number" id="jumlah" name="jumlah" min="1" required>
+
+            <label for="metode">Metode Pembayaran:</label>
+            <select id="metode" name="metode">
+                <option value="Transfer Bank">Transfer Bank</option>
+                <option value="Bayar di Tempat (COD)">Bayar di Tempat (COD)</option>
+                <option value="E-Wallet">E-Wallet</option>
+            </select>
+
+            <label for="nomor">Nomor Telepon / WhatsApp:</label>
+            <input type="tel" id="nomor" name="nomor" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email">
+
+            <label for="alamat">Alamat Pengiriman:</label>
+            <textarea id="alamat" name="alamat" rows="3" required></textarea>
+
+            <label for="lain">Lain-lain (Catatan Tambahan):</label>
+            <textarea id="lain" name="lain" rows="2"></textarea>
+
+            <button type="button" onclick="submitForm()">Pesan Sekarang</button>
+        </form>
+    </div>
+
+    <div id="riwayatContainer">
+        <h2>Riwayat Transaksi</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kode Pembeli</th>
+                    <th>Tanggal</th>
+                    <th>Barang</th>
+                    <th>Ukuran</th>
+                    <th>Jumlah</th>
+                    <th>Metode</th>
+                    <th>Nomor HP</th>
+                    <th>Email</th>
+                    <th>Alamat</th>
+                    <th>Catatan</th>
+                </tr>
+            </thead>
+            <tbody id="transaksiBody"></tbody>
+        </table>
+        <button onclick="window.print()">Cetak Transaksi</button>
+    </div>
+
+    <script>
+        function generateKodePembeli() {
+            let now = new Date();
+            let year = now.getFullYear();
+            let month = String(now.getMonth() + 1).padStart(2, '0');
+            let day = String(now.getDate()).padStart(2, '0');
+            let hours = String(now.getHours()).padStart(2, '0');
+            let minutes = String(now.getMinutes()).padStart(2, '0');
+            let seconds = String(now.getSeconds()).padStart(2, '0');
+
+            return `KP-${year}${month}${day}-${hours}${minutes}${seconds}`;
+        }
+
+        function submitForm() {
+            let kodePembeli = generateKodePembeli();
+            let transaksi = {
+                kodePembeli,
+                tanggal: document.getElementById("tanggal").value,
+                barang: document.getElementById("barang").value,
+                ukuran: document.getElementById("ukuran").value,
+                jumlah: document.getElementById("jumlah").value,
+                metode: document.getElementById("metode").value,
+                nomor: document.getElementById("nomor").value,
+                email: document.getElementById("email").value,
+                alamat: document.getElementById("alamat").value,
+                lain: document.getElementById("lain").value
+            };
+
+            let transaksiList = JSON.parse(localStorage.getItem("transaksiList")) || [];
+            transaksiList.push(transaksi);
+            localStorage.setItem("transaksiList", JSON.stringify(transaksiList));
+
+            alert("Pesanan berhasil disimpan! Lihat di halaman Riwayat Transaksi.");
+            tampilkanRiwayat();
+        }
+
+        function tampilkanRiwayat() {
+            let transaksiList = JSON.parse(localStorage.getItem("transaksiList")) || [];
+            let tbody = document.getElementById("transaksiBody");
+            tbody.innerHTML = "";
+
+            transaksiList.forEach(transaksi => {
+                let row = tbody.insertRow();
+                row.insertCell(0).innerHTML = transaksi.kodePembeli;
+                row.insertCell(1).innerHTML = transaksi.tanggal;
+                row.insertCell(2).innerHTML = transaksi.barang;
+                row.insertCell(3).innerHTML = transaksi.ukuran;
+                row.insertCell(4).innerHTML = transaksi.jumlah;
+                row.insertCell(5).innerHTML = transaksi.metode;
+                row.insertCell(6).innerHTML = transaksi.nomor;
+                row.insertCell(7).innerHTML = transaksi.email || "-";
+                row.insertCell(8).innerHTML = transaksi.alamat;
+                row.insertCell(9).innerHTML = transaksi.lain || "-";
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", tampilkanRiwayat);
+    </script>
+
+</body>
+</html>
